@@ -1,0 +1,69 @@
+plugins {
+    id "com.gradleup.shadow"
+}
+
+architectury {
+    platformSetupLoomIde()
+    neoForge()
+}
+
+configurations {
+    common {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+    shadowBundle {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentNeoForge.extendsFrom common
+}
+
+dependencies {
+    neoForge "net.neoforged:neoforge:${project.neoforge_version}"
+
+    modApi "dev.architectury:architectury-neoforge:${project.architectury_version}"
+
+    modImplementation "software.bernie.geckolib:geckolib-neoforge-${project.mc_version}:${project.geckolib_version}"
+
+    modImplementation "maven.modrinth:terrafirmacraft:${project.tfc_version}"
+    modLocalRuntime "vazkii.patchouli:Patchouli:${project.patchouli_version}"
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowBundle project(path: ":common", configuration: "transformProductionNeoForge")
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "neoForgeVersion", project.neoforge_version
+    filesMatching("META-INF/neoforge.mods.toml") {
+        expand "version": project.version,
+               "neoForgeVersion": project.neoforge_version
+    }
+}
+
+shadowJar {
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = "dev-shadow"
+}
+
+remapJar {
+    inputFile.set shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveClassifier = "neoforge"
+}
+
+jar {
+    archiveClassifier = "dev"
+}
+
+sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}

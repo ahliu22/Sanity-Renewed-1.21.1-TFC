@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "guivnf.sanity_renewed.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MixinJukeboxBlockEntity",
+    "MixinLivingEntity",
+    "MixinPlayer",
+    "MixinServerLevel",
+    "MixinTFCAnimalProperties"
+  ],
+  "client": [
+    "AccessorPostChain",
+    "MixinGameRenderer"
+  ],
+  "injectors": {
+    "defaultRequire": 1,
+    "maxShiftBy": 3
+  }
+}
