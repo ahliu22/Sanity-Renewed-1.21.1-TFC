@@ -36,6 +36,10 @@ Data Pack Food Rules
 - Define rules in data/<namespace>/sanity/food/*.json as {"ingredient": {"item": "..."} or {"tag": "..."}, "modifier": -0.5}.  
 - The base value is nutrient sum × 0.5, then multiplied by every matching rule modifier. Built-in example: sandwiches in the sanity_renewed:badfoods tag have a −0.5 modifier.  
 
+Data Pack Effects  
+- Define rules in data/<namespace>/sanity/effect/*.json  
+- Can define effects, effect amplifier, sanity.  
+
 Effects of Low Sanity (all thresholds configurable)  
 - Sanity ≤ 50%: the sanity indicator and inner monologue begin to twitch; the heartbeat starts fading in.  
 - Sanity ≤ 45%: insanity ambience starts fading in.  
@@ -88,6 +92,10 @@ Sanity: Renewed 是一个将《饥荒》式理智机制带入 Minecraft 1.21.1�
 数据包自定义食物规则  
 - 在 data/<命名空间>/sanity/food/*.json 中定义规则，格式：{"ingredient": {"item": "..."} 或 {"tag": "..."}, "modifier": -0.5}。  
 - 食用时先算 营养总和 × 0.5，再乘上所有匹配规则的 modifier。模组自带示例：sanity_renewed:badfoods 标签内的三明治 modifier 为 −0.5。
+
+数据包药水效果  
+- 自定义药水规则data/<namespace>/sanity/effect/*.json  
+- 可自定义药水效果，强度，触发san值。
 
 低 san 对玩家的影响（阈值全部可配置）  
 - *san ≤ 50%*：HUD 理智指示条与内心独白开始抖动；心跳声开始淡入。  

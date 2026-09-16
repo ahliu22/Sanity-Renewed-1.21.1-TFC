@@ -1,6 +1,7 @@
 package guivnf.sanity_renewed;
 
 import guivnf.sanity_renewed.config.ConfigManager;
+import guivnf.sanity_renewed.effect.SanityEffectManager;
 import guivnf.sanity_renewed.entity.EntityRegistry;
 import guivnf.sanity_renewed.food.FoodSanityManager;
 import guivnf.sanity_renewed.item.ItemRegistry;
@@ -31,6 +32,7 @@ public final class SanityMod
         EntityRegistry.init();
         EntityRegistry.registerAttributes();
         ReloadListenerRegistry.register(PackType.SERVER_DATA, FoodSanityManager.INSTANCE);
+        ReloadListenerRegistry.register(PackType.SERVER_DATA, SanityEffectManager.INSTANCE);
         guivnf.sanity_renewed.net.PacketHandler.init();
         guivnf.sanity_renewed.event.EventHandler.register();
         LOGGER.info("[{}] common init complete", MOD_ID);

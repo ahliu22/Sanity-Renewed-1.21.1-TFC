@@ -7,6 +7,8 @@ import guivnf.sanity_renewed.capability.SanityHolder;
 import guivnf.sanity_renewed.config.ConfigItem;
 import guivnf.sanity_renewed.config.ConfigItemCategory;
 import guivnf.sanity_renewed.config.ConfigProxy;
+import guivnf.sanity_renewed.effect.SanityEffectManager;
+import guivnf.sanity_renewed.effect.SanityEffectRule;
 import guivnf.sanity_renewed.food.FoodSanityManager;
 import guivnf.sanity_renewed.item.ItemRegistry;
 import guivnf.sanity_renewed.net.PacketHandler;
@@ -30,12 +32,15 @@ import net.dries007.tfc.common.component.food.IFood;
 import net.dries007.tfc.common.component.food.Nutrient;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -62,6 +67,7 @@ public final class SanityProcessor
     public static final int MIN_SLEEP_TICKS = 100;
     public static final int SLEEP_GRACE_TICKS = 20;
     public static final int SLEEP_SKIP_MARGIN = 40;
+    public static final int DEBUFF_DURATION_TICKS = 20 * 10;
     public static final List<IPassiveSanitySource> PASSIVE_SANITY_SOURCES = Arrays.asList(
             new Passive(),
             new InWaterOrRain(),
@@ -170,10 +176,28 @@ public final class SanityProcessor
 
         tickSleep(s, player);
         tickInnerEntityKillDecay(s, player);
+        applySanityDebuffs(s, player);
 
         shareSanity(player, s);
 
         guivnf.sanity_renewed.entity.InnerEntitySpawner.trySpawnForPlayer(player);
+    }
+
+    private static void applySanityDebuffs(Sanity s, ServerPlayer player)
+    {
+        float sanity = s.getSanity();
+        for (SanityEffectRule rule : SanityEffectManager.getRules())
+        {
+            if (sanity >= insanityOf(rule.sanity()))
+                refreshEffect(player, rule.effect(), rule.level(), DEBUFF_DURATION_TICKS);
+        }
+    }
+
+    private static void refreshEffect(ServerPlayer player, Holder<MobEffect> effect, int amplifier, int duration)
+    {
+        MobEffectInstance active = player.getEffect(effect);
+        if (active == null || active.getAmplifier() != amplifier || active.getDuration() < duration / 2)
+            player.addEffect(new MobEffectInstance(effect, duration, amplifier, false, true, true));
     }
 
     private static void tickSleep(Sanity s, ServerPlayer player)
